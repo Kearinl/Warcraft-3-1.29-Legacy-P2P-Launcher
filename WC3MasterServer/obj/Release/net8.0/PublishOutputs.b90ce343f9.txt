@@ -1,0 +1,7 @@
+C:\Users\Nekmi\Desktop\Warcraft 3 1.29 Bnet\WC3MasterServer\bin\Release\net8.0\publish\WC3MasterServer.exe
+C:\Users\Nekmi\Desktop\Warcraft 3 1.29 Bnet\WC3MasterServer\bin\Release\net8.0\publish\appsettings.Development.json
+C:\Users\Nekmi\Desktop\Warcraft 3 1.29 Bnet\WC3MasterServer\bin\Release\net8.0\publish\appsettings.json
+C:\Users\Nekmi\Desktop\Warcraft 3 1.29 Bnet\WC3MasterServer\bin\Release\net8.0\publish\WC3MasterServer.dll
+C:\Users\Nekmi\Desktop\Warcraft 3 1.29 Bnet\WC3MasterServer\bin\Release\net8.0\publish\WC3MasterServer.deps.json
+C:\Users\Nekmi\Desktop\Warcraft 3 1.29 Bnet\WC3MasterServer\bin\Release\net8.0\publish\WC3MasterServer.runtimeconfig.json
+C:\Users\Nekmi\Desktop\Warcraft 3 1.29 Bnet\WC3MasterServer\bin\Release\net8.0\publish\WC3MasterServer.pdb
