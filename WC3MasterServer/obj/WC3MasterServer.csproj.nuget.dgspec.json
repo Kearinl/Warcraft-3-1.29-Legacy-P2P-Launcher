@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Nekmi\\Desktop\\Warcraft 3 1.29 Bnet\\WC3MasterServer\\WC3MasterServer.csproj": {}
+    "C:\\Users\\Nekmi\\Desktop\\Github\\Warcraft-3-1.29-Legacy-P2P-Launcher\\WC3MasterServer\\WC3MasterServer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Nekmi\\Desktop\\Warcraft 3 1.29 Bnet\\WC3MasterServer\\WC3MasterServer.csproj": {
+    "C:\\Users\\Nekmi\\Desktop\\Github\\Warcraft-3-1.29-Legacy-P2P-Launcher\\WC3MasterServer\\WC3MasterServer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Nekmi\\Desktop\\Warcraft 3 1.29 Bnet\\WC3MasterServer\\WC3MasterServer.csproj",
+        "projectUniqueName": "C:\\Users\\Nekmi\\Desktop\\Github\\Warcraft-3-1.29-Legacy-P2P-Launcher\\WC3MasterServer\\WC3MasterServer.csproj",
         "projectName": "WC3MasterServer",
-        "projectPath": "C:\\Users\\Nekmi\\Desktop\\Warcraft 3 1.29 Bnet\\WC3MasterServer\\WC3MasterServer.csproj",
+        "projectPath": "C:\\Users\\Nekmi\\Desktop\\Github\\Warcraft-3-1.29-Legacy-P2P-Launcher\\WC3MasterServer\\WC3MasterServer.csproj",
         "packagesPath": "C:\\Users\\Nekmi\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Nekmi\\Desktop\\Warcraft 3 1.29 Bnet\\WC3MasterServer\\obj\\",
+        "outputPath": "C:\\Users\\Nekmi\\Desktop\\Github\\Warcraft-3-1.29-Legacy-P2P-Launcher\\WC3MasterServer\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Nekmi\\AppData\\Roaming\\NuGet\\NuGet.Config"
