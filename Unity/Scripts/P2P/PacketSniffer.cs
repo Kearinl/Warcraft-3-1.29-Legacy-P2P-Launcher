@@ -16,9 +16,8 @@ public class PacketSniffer : MonoBehaviour
     private ICaptureDevice device;
     private string clientId;
 
-    // thread-safe queue
-    private readonly Queue<byte[]> packetQueue = new Queue<byte[]>();
-    private readonly object queueLock = new object();
+    private readonly Queue<byte[]> packetQueue = new();
+    private readonly object queueLock = new();
 
     void Start()
     {
@@ -26,44 +25,46 @@ public class PacketSniffer : MonoBehaviour
 
         var devices = CaptureDeviceList.Instance;
 
+        Debug.Log("=== WC3 ADAPTER SCAN START ===");
+
         if (devices.Count == 0)
         {
-            Debug.LogError("No capture devices found.");
+            Debug.LogError("No capture devices found (Npcap issue)");
             return;
         }
+
+        var activeInterfaces = NetworkInterface.GetAllNetworkInterfaces();
 
         ICaptureDevice bestDevice = null;
         int bestScore = -1;
 
-        var activeInterfaces = NetworkInterface.GetAllNetworkInterfaces();
-
-        foreach (var d in devices)
+        for (int i = 0; i < devices.Count; i++)
         {
+            var d = devices[i];
             string desc = d.Description.ToLower();
 
-            Debug.Log("Found Adapter: " + d.Description);
+            Debug.Log($"[ADAPTER {i}] {d.Description}");
 
-            // skip broken/virtual adapters
-            if (desc.Contains("miniport") ||
-                desc.Contains("loopback") ||
+            // skip bad adapters
+            if (desc.Contains("loopback") ||
                 desc.Contains("npcap") ||
-                desc.Contains("vpn") ||
                 desc.Contains("virtual") ||
                 desc.Contains("hyper-v") ||
-                desc.Contains("docker"))
+                desc.Contains("docker") ||
+                desc.Contains("vpn"))
             {
                 continue;
             }
 
             int score = 0;
 
-            // prefer physical adapters
-            if (desc.Contains("ethernet")) score += 80;
-            if (desc.Contains("wi-fi") || desc.Contains("wireless")) score += 60;
+            // base hardware preference
+            if (desc.Contains("ethernet")) score += 100;
+            if (desc.Contains("wi-fi") || desc.Contains("wireless")) score += 80;
             if (desc.Contains("intel")) score += 40;
             if (desc.Contains("realtek")) score += 40;
 
-            // strongly prefer ACTIVE system interface match
+            // match OS active interfaces
             foreach (var ni in activeInterfaces)
             {
                 if (ni.OperationalStatus != OperationalStatus.Up)
@@ -76,12 +77,9 @@ public class PacketSniffer : MonoBehaviour
                 string niDesc = ni.Description.ToLower();
 
                 if (desc.Contains(niName) || desc.Contains(niDesc))
-                {
                     score += 200;
-                }
             }
 
-            // test if device can actually open
             try
             {
                 d.Open();
@@ -109,41 +107,34 @@ public class PacketSniffer : MonoBehaviour
 
         device = bestDevice;
 
-        Debug.Log("USING ADAPTER: " + device.Description);
+        Debug.Log("=== SELECTED ADAPTER ===");
+        Debug.Log(device.Description);
 
         device.OnPacketArrival += OnPacketArrival;
-
         device.Open();
         device.StartCapture();
 
         Debug.Log("PacketSniffer started");
     }
 
-    // ============================
-    // THREAD SAFE PACKET CAPTURE
-    // ============================
     private void OnPacketArrival(object sender, CaptureEventArgs e)
     {
         try
         {
             var raw = e.Packet;
-
             var packet = Packet.ParsePacket(raw.LinkLayerType, raw.Data);
 
             var udp = packet.Extract(typeof(UdpPacket)) as UdpPacket;
-
-            if (udp == null)
-                return;
+            if (udp == null) return;
 
             int src = udp.SourcePort;
             int dst = udp.DestinationPort;
 
-            // WC3 LAN port filter
+            // WC3 LAN filter
             if (src != 6112 && dst != 6112)
                 return;
 
             byte[] payload = udp.PayloadData;
-
             if (payload == null || payload.Length == 0)
                 return;
 
@@ -154,13 +145,10 @@ public class PacketSniffer : MonoBehaviour
         }
         catch
         {
-            // ignore capture errors
+            // ignore
         }
     }
 
-    // ============================
-    // MAIN THREAD PROCESSING
-    // ============================
     void Update()
     {
         while (true)
@@ -187,11 +175,8 @@ public class PacketSniffer : MonoBehaviour
     {
         try
         {
-            if (device != null)
-            {
-                device.StopCapture();
-                device.Close();
-            }
+            device?.StopCapture();
+            device?.Close();
         }
         catch { }
     }

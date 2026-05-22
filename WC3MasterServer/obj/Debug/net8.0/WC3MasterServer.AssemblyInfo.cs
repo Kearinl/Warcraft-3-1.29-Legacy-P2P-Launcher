@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WC3MasterServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af3879c48c5a7f9070373136efd4b82955f08172")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+50bf149deb239473070148ed926daa1187bfe5d8")]
 [assembly: System.Reflection.AssemblyProductAttribute("WC3MasterServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WC3MasterServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

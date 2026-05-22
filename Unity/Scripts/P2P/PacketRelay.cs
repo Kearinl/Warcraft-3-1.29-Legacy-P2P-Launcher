@@ -28,29 +28,23 @@ public class PacketRelay : MonoBehaviour
         Debug.Log("Relay ready: " + relayEndPoint);
     }
 
-    // ? FIXED SIGNATURE (MATCHES YOUR SNiffer CALL)
     public void Send(byte[] data, string senderId)
+{
+    if (udp == null) return;
+
+    try
     {
-        if (udp == null) return;
+        string wrapped = PacketTagger.Wrap(data, senderId);
 
-        try
-        {
-            string payload = Convert.ToBase64String(data);
+        byte[] bytes = Encoding.UTF8.GetBytes(wrapped);
 
-            // format: senderId|base64
-            string msg = $"{senderId}|{payload}";
-
-            byte[] bytes = Encoding.UTF8.GetBytes(msg);
-
-            udp.Send(bytes, bytes.Length, relayEndPoint);
-
-            Debug.Log("SENDING TO RELAY: " + relayEndPoint);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning("Relay send failed: " + ex.Message);
-        }
+        udp.Send(bytes, bytes.Length, relayEndPoint);
     }
+    catch (Exception ex)
+    {
+        Debug.LogWarning("Relay send failed: " + ex.Message);
+    }
+}
 
     private IPAddress Resolve(string host)
     {
