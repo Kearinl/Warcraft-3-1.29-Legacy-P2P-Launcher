@@ -248,6 +248,82 @@ Avoid modifying game binaries
 Emulate LAN instead of replacing networking
 Keep system lightweight and modular
 Enable community-hosted multiplayer revival
+
+```
+✔ Added: Stable Relay Core Improvements
+✔ Implemented packet tagging system (session + sequence + sender ID)
+✔ Added duplicate packet protection (anti-replay system)
+✔ Prevented relay echo loops between peers
+✔ Improved UDP forwarding stability
+✔ Added safe parsing for malformed packets
+✔ Added ping/pong debug heartbeat system
+✔ Improved multi-peer forwarding logic
+✔ Added: Packet Integrity Layer
+✔ Base64 payload encoding standardised across all clients
+✔ Structured packet format:
+sessionId | senderId | sequence | payload
+✔ Sequence tracking per sender
+✔ Packet key hashing (sender:seq) for deduplication
+✔ Timestamp-based cleanup of stale packet records
+✔ Added: Unity Relay Sender Upgrade
+✔ Updated PacketRelay.Send() signature to unified format
+✔ Integrated automatic packet wrapping via PacketTagger
+✔ Removed legacy inconsistent message formatting
+✔ Ensured DNS + IP compatibility in relay endpoint resolution
+✔ Added debug logging for sent relay packets
+✔ Added: PacketSniffer Stability Improvements
+✔ Improved network adapter detection system
+✔ Added scoring-based adapter selection logic
+✔ Filtered out:
+VPN adapters
+Virtual adapters
+Loopback interfaces
+Hyper-V / Docker / Miniport interfaces
+✔ Prioritised active physical NICs
+✔ Stabilised capture device initialization
+✔ Improved thread-safe packet queue system
+✔ Reduced packet capture crashes under load
+✔ Added: Master Server Integration Fixes
+✔ Continuous heartbeat registration system
+✔ Player ID persistence per session
+✔ Improved peer discovery loop stability
+✔ Clean peer filtering (self-exclusion)
+✔ Automatic peer IP assignment to injector
+✔ Basic online/offline system status tracking
+✔ Added: LAN Bridge Integration Layer
+✔ Injector-based peer IP assignment system
+✔ Automatic connection to first available peer
+✔ Runtime switching of remote endpoint
+✔ Simplified P2P routing between Unity clients
+✔ Added: Debug & Observability Tools
+✔ Relay console packet logging:
+sender ID
+sequence number
+packet size
+✔ Unity packet logs (WC3 UDP traffic display)
+✔ Adapter scan logging for troubleshooting
+✔ Connection status logs between peers
+✔ Master server register logs
+✔ Fixed Issues From Previous Build
+✔ Fixed packet flood duplication in relay
+✔ Fixed incorrect Send() signature mismatches
+✔ Fixed adapter selection randomness issues
+✔ Fixed relay spam caused by Unity update loop
+✔ Fixed packet parsing instability under malformed input
+✔ Fixed peer “ghost connections” appearing in UI
+✔ Reduced packet jitter in high-frequency updates
+⚠ Known Current Limitations
+⚠ No true WC3 lobby emulation (game list not spoofed yet)
+⚠ No NAT traversal / external internet matchmaking
+⚠ No encryption or anti-tamper layer
+⚠ Still single global relay namespace (no formal room IDs yet — intentionally removed)
+🧠 Current Architecture Summary
+Unity → PacketSniffer → PacketRelay → UDP Relay Server → Other Peers
+MasterServer → peer discovery only
+Relay Server → raw packet forwarding + stability layer
+No game logic interpretation (pure transport layer)
+```
+
 ```
 ### 📜 Disclaimer:
 ```
