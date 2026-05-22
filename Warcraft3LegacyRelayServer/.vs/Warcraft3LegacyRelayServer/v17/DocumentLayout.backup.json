@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Nekmi\\Desktop\\Warcraft3relayserver\\Warcraft3LegacyRelayServer\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{02A8247B-55EB-4CD8-BA06-5B3E9AB04DE4}|Warcraft3LegacyRelayServer\\Warcraft3LegacyRelayServer.csproj|c:\\users\\nekmi\\desktop\\warcraft3relayserver\\warcraft3legacyrelayserver\\warcraft3legacyrelayserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{02A8247B-55EB-4CD8-BA06-5B3E9AB04DE4}|Warcraft3LegacyRelayServer\\Warcraft3LegacyRelayServer.csproj|solutionrelative:warcraft3legacyrelayserver\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Nekmi\\Desktop\\Warcraft3relayserver\\Warcraft3LegacyRelayServer\\Warcraft3LegacyRelayServer\\Program.cs",
+              "RelativeDocumentMoniker": "Warcraft3LegacyRelayServer\\Program.cs",
+              "ToolTip": "C:\\Users\\Nekmi\\Desktop\\Warcraft3relayserver\\Warcraft3LegacyRelayServer\\Warcraft3LegacyRelayServer\\Program.cs",
+              "RelativeToolTip": "Warcraft3LegacyRelayServer\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-22T04:32:28.403Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -5,77 +6,117 @@ using UnityEngine;
 
 public class LANBridgeInjector : MonoBehaviour
 {
+    [Header("Target (IP or DNS)")]
     public string remoteIP = "127.0.0.1";
 
+    [Header("Listen Port")]
     public int listenPort = 6200;
+
+    [Header("WC3 LAN Port")]
+    public int wc3Port = 6112;
 
     private UdpClient listener;
 
+    // cached resolved IP
+    private IPAddress cachedTargetIP;
+    private float lastResolveTime;
+    public float resolveInterval = 30f;
+
     void Start()
     {
-        listener =
-            new UdpClient(listenPort);
+        listener = new UdpClient(listenPort);
+        listener.BeginReceive(OnReceive, null);
 
-        listener.BeginReceive(
-            OnReceive,
-            null
-        );
-
-        Debug.Log(
-            "Injector listening: " +
-            listenPort
-        );
+        Debug.Log("Injector listening on port: " + listenPort);
     }
 
-    void OnReceive(System.IAsyncResult ar)
+    void OnReceive(IAsyncResult ar)
     {
-        IPEndPoint ep =
-            new IPEndPoint(
-                IPAddress.Any,
-                listenPort
-            );
+        try
+        {
+            IPEndPoint ep = new IPEndPoint(IPAddress.Any, listenPort);
 
-        byte[] data =
-            listener.EndReceive(ar, ref ep);
+            byte[] data = listener.EndReceive(ar, ref ep);
+            string msg = Encoding.UTF8.GetString(data);
 
-        string msg =
-            Encoding.UTF8.GetString(data);
+            string[] parts = msg.Split('|');
+            if (parts.Length != 2)
+            {
+                listener.BeginReceive(OnReceive, null);
+                return;
+            }
 
-        // SPLIT MESSAGE
-        string[] parts =
-            msg.Split('|');
+            byte[] packet = Convert.FromBase64String(parts[1]);
 
-        if (parts.Length != 2)
-            return;
+            // Get resolved target (DNS or IP)
+            IPAddress target = GetResolvedIP();
 
-        byte[] packet =
-            System.Convert.FromBase64String(
-                parts[1]
-            );
+            if (target == null)
+            {
+                Debug.LogWarning("Failed to resolve target IP: " + remoteIP);
+                listener.BeginReceive(OnReceive, null);
+                return;
+            }
 
-        // REBROADCAST TO LOCAL WC3 LAN
-        UdpClient rebroadcast =
-            new UdpClient();
+            using (UdpClient sender = new UdpClient())
+            {
+                sender.Send(packet, packet.Length, new IPEndPoint(target, wc3Port));
+            }
 
-        rebroadcast.EnableBroadcast = true;
+            Debug.Log("Injected WC3 packet to: " + target + ":" + wc3Port);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Receive error: " + ex.Message);
+        }
+        finally
+        {
+            // restart listener
+            listener.BeginReceive(OnReceive, null);
+        }
+    }
 
-        rebroadcast.Send(
-            packet,
-            packet.Length,
-            new IPEndPoint(
-                IPAddress.Broadcast,
-                6112
-            )
-        );
+    private IPAddress GetResolvedIP()
+    {
+        // refresh cache every X seconds
+        if (cachedTargetIP != null &&
+            Time.time - lastResolveTime < resolveInterval)
+        {
+            return cachedTargetIP;
+        }
 
-        Debug.Log(
-            "Injected WC3 packet locally"
-        );
+        cachedTargetIP = ResolveIP(remoteIP);
+        lastResolveTime = Time.time;
 
-        listener.BeginReceive(
-            OnReceive,
-            null
-        );
+        return cachedTargetIP;
+    }
+
+    private IPAddress ResolveIP(string host)
+    {
+        if (string.IsNullOrWhiteSpace(host))
+            return null;
+
+        // Already IP?
+        if (IPAddress.TryParse(host, out IPAddress ip))
+            return ip;
+
+        try
+        {
+            var addresses = Dns.GetHostAddresses(host);
+
+            foreach (var addr in addresses)
+            {
+                if (addr.AddressFamily == AddressFamily.InterNetwork)
+                    return addr; // prefer IPv4
+            }
+
+            return addresses.Length > 0 ? addresses[0] : null;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("DNS resolve failed: " + ex.Message);
+            return null;
+        }
     }
 
     void OnDestroy()

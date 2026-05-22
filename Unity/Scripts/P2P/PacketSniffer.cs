@@ -2,7 +2,8 @@ using UnityEngine;
 using SharpPcap;
 using PacketDotNet;
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Net.NetworkInformation;
 
 public class PacketSniffer : MonoBehaviour
 {
@@ -15,6 +16,10 @@ public class PacketSniffer : MonoBehaviour
     private ICaptureDevice device;
     private string clientId;
 
+    // thread-safe queue
+    private readonly Queue<byte[]> packetQueue = new Queue<byte[]>();
+    private readonly object queueLock = new object();
+
     void Start()
     {
         clientId = Guid.NewGuid().ToString();
@@ -23,28 +28,22 @@ public class PacketSniffer : MonoBehaviour
 
         if (devices.Count == 0)
         {
-            Debug.LogError(
-                "No capture devices found."
-            );
-
+            Debug.LogError("No capture devices found.");
             return;
         }
 
-        // ------------------------------------
-        // SMART DEVICE SELECTION
-        // ------------------------------------
+        ICaptureDevice bestDevice = null;
+        int bestScore = -1;
+
+        var activeInterfaces = NetworkInterface.GetAllNetworkInterfaces();
 
         foreach (var d in devices)
         {
-            string desc =
-                d.Description.ToLower();
+            string desc = d.Description.ToLower();
 
-            Debug.Log(
-                "Found Adapter: " +
-                d.Description
-            );
+            Debug.Log("Found Adapter: " + d.Description);
 
-            // SKIP BAD ADAPTERS
+            // skip broken/virtual adapters
             if (desc.Contains("miniport") ||
                 desc.Contains("loopback") ||
                 desc.Contains("npcap") ||
@@ -56,72 +55,82 @@ public class PacketSniffer : MonoBehaviour
                 continue;
             }
 
-            // PREFER REAL LAN/WIFI
-            if (desc.Contains("ethernet") ||
-                desc.Contains("wi-fi") ||
-                desc.Contains("wireless") ||
-                desc.Contains("realtek") ||
-                desc.Contains("intel"))
+            int score = 0;
+
+            // prefer physical adapters
+            if (desc.Contains("ethernet")) score += 80;
+            if (desc.Contains("wi-fi") || desc.Contains("wireless")) score += 60;
+            if (desc.Contains("intel")) score += 40;
+            if (desc.Contains("realtek")) score += 40;
+
+            // strongly prefer ACTIVE system interface match
+            foreach (var ni in activeInterfaces)
             {
-                device = d;
-                break;
+                if (ni.OperationalStatus != OperationalStatus.Up)
+                    continue;
+
+                if (ni.NetworkInterfaceType == NetworkInterfaceType.Loopback)
+                    continue;
+
+                string niName = ni.Name.ToLower();
+                string niDesc = ni.Description.ToLower();
+
+                if (desc.Contains(niName) || desc.Contains(niDesc))
+                {
+                    score += 200;
+                }
+            }
+
+            // test if device can actually open
+            try
+            {
+                d.Open();
+                d.Close();
+            }
+            catch
+            {
+                continue;
+            }
+
+            score += 10;
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestDevice = d;
             }
         }
 
-        // FALLBACK
-        if (device == null)
+        if (bestDevice == null)
         {
-            device = devices[0];
-
-            Debug.LogWarning(
-                "Fallback adapter selected: " +
-                device.Description
-            );
+            bestDevice = devices[0];
+            Debug.LogWarning("Fallback adapter used: " + bestDevice.Description);
         }
 
-        Debug.Log(
-            "USING ADAPTER: " +
-            device.Description
-        );
+        device = bestDevice;
 
-        // ------------------------------------
-        // START CAPTURE
-        // ------------------------------------
+        Debug.Log("USING ADAPTER: " + device.Description);
 
-        device.OnPacketArrival +=
-            OnPacketArrival;
+        device.OnPacketArrival += OnPacketArrival;
 
         device.Open();
-
         device.StartCapture();
 
-        Debug.Log(
-            "PacketSniffer started"
-        );
+        Debug.Log("PacketSniffer started");
     }
 
-    // ------------------------------------
-    // PACKET EVENT
-    // ------------------------------------
-    private void OnPacketArrival(
-        object sender,
-        CaptureEventArgs e
-    )
+    // ============================
+    // THREAD SAFE PACKET CAPTURE
+    // ============================
+    private void OnPacketArrival(object sender, CaptureEventArgs e)
     {
         try
         {
             var raw = e.Packet;
 
-            Packet packet =
-                Packet.ParsePacket(
-                    raw.LinkLayerType,
-                    raw.Data
-                );
+            var packet = Packet.ParsePacket(raw.LinkLayerType, raw.Data);
 
-            UdpPacket udp =
-                (UdpPacket)packet.Extract(
-                    typeof(UdpPacket)
-                );
+            var udp = packet.Extract(typeof(UdpPacket)) as UdpPacket;
 
             if (udp == null)
                 return;
@@ -129,46 +138,51 @@ public class PacketSniffer : MonoBehaviour
             int src = udp.SourcePort;
             int dst = udp.DestinationPort;
 
-            // WC3 LAN PORT
-            if (src != 6112 &&
-                dst != 6112)
+            // WC3 LAN port filter
+            if (src != 6112 && dst != 6112)
                 return;
 
-            byte[] payload =
-                udp.PayloadData;
+            byte[] payload = udp.PayloadData;
 
-            if (payload == null ||
-                payload.Length == 0)
+            if (payload == null || payload.Length == 0)
                 return;
 
-            if (logPackets)
+            lock (queueLock)
             {
-                Debug.Log(
-                    "WC3 UDP: " +
-                    payload.Length +
-                    " bytes"
-                );
-            }
-
-            if (relay != null)
-            {
-                relay.Send(
-                    payload,
-                    clientId
-                );
+                packetQueue.Enqueue(payload);
             }
         }
-        catch (Exception ex)
+        catch
         {
-            Debug.LogWarning(
-                ex.Message
-            );
+            // ignore capture errors
         }
     }
 
-    // ------------------------------------
-    // CLEANUP
-    // ------------------------------------
+    // ============================
+    // MAIN THREAD PROCESSING
+    // ============================
+    void Update()
+    {
+        while (true)
+        {
+            byte[] payload = null;
+
+            lock (queueLock)
+            {
+                if (packetQueue.Count > 0)
+                    payload = packetQueue.Dequeue();
+            }
+
+            if (payload == null)
+                break;
+
+            if (logPackets)
+                Debug.Log("WC3 UDP: " + payload.Length + " bytes");
+
+            relay?.Send(payload, clientId);
+        }
+    }
+
     void OnDestroy()
     {
         try

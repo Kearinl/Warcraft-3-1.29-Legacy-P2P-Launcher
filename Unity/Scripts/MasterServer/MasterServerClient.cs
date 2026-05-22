@@ -21,6 +21,7 @@ public class MasterServerClient : MonoBehaviour
 
     private string playerId;
     private string status = "Offline";
+    public PacketRelay relay;
 
     // ------------------------------------
     // START
@@ -185,13 +186,20 @@ public class MasterServerClient : MonoBehaviour
     // UPDATE UI
     // ------------------------------------
     void UpdateUI()
+{
+    bool masterOnline = (status == "Online");
+    bool relayOnline = relay != null;
+
+    bool fullyOnline = masterOnline && relayOnline;
+
+    if (statusText != null)
     {
-        if (statusText != null)
-        {
-            statusText.text =
-                "Master Server: " + status;
-        }
+        statusText.text =
+            fullyOnline
+            ? "SYSTEM: ONLINE"
+            : "SYSTEM: OFFLINE";
     }
+}
 
     // ------------------------------------
     // GET LOCAL IPV4

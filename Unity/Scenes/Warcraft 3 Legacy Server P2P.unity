@@ -375,8 +375,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23564ddb9a32b084da947428e2512a2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LANBridgeInjector
-  remoteIP: 120.22.126.215
+  remoteIP: war3legacy.ddns.net
   listenPort: 6200
+  wc3Port: 6112
+  resolveInterval: 30
 --- !u!1 &172282915
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,11 +409,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9360c5d97124f34b9c5a50f0f3c84ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MasterServerClient
-  baseUrl: http://localhost:5047
+  baseUrl: http://war3legacy.ddns.net:5047
   statusText: {fileID: 65948731}
   peerCountText: {fileID: 1490971256}
   heartbeatInterval: 30
   injector: {fileID: 163738736}
+  relay: {fileID: 731333839}
 --- !u!114 &172282918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1304,7 +1307,7 @@ GameObject:
   - component: {fileID: 380284142}
   - component: {fileID: 380284141}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Title Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1349,7 +1352,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Warcraft 3 - 1.29 (Legacy) P2P Launcher - v0.0.2
+  m_text: Warcraft 3 - 1.29 (Legacy) P2P Launcher - v0.0.3
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
   m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
@@ -1713,8 +1716,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66254ee8addbfe489c73b2c3a939a89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PacketRelay
-  remoteIP: 120.22.126.215
-  remotePort: 6200
+  serverIP: war3legacy.ddns.net
+  serverPort: 5048
+  playerId: 
 --- !u!1 &935404866
 GameObject:
   m_ObjectHideFlags: 0

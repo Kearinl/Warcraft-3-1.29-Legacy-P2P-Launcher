@@ -1,0 +1,14 @@
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\bin\Release\net8.0\Warcraft3LegacyRelayServer.exe
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\bin\Release\net8.0\Warcraft3LegacyRelayServer.deps.json
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\bin\Release\net8.0\Warcraft3LegacyRelayServer.runtimeconfig.json
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\bin\Release\net8.0\Warcraft3LegacyRelayServer.dll
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\bin\Release\net8.0\Warcraft3LegacyRelayServer.pdb
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\obj\Release\net8.0\Warcraft3LegacyRelayServer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\obj\Release\net8.0\Warcraft3LegacyRelayServer.AssemblyInfoInputs.cache
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\obj\Release\net8.0\Warcraft3LegacyRelayServer.AssemblyInfo.cs
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\obj\Release\net8.0\Warcraft3LegacyRelayServer.csproj.CoreCompileInputs.cache
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\obj\Release\net8.0\Warcraft3LegacyRelayServer.dll
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\obj\Release\net8.0\refint\Warcraft3LegacyRelayServer.dll
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\obj\Release\net8.0\Warcraft3LegacyRelayServer.pdb
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\obj\Release\net8.0\Warcraft3LegacyRelayServer.genruntimeconfig.cache
+C:\Users\Nekmi\Desktop\Warcraft3relayserver\Warcraft3LegacyRelayServer\Warcraft3LegacyRelayServer\obj\Release\net8.0\ref\Warcraft3LegacyRelayServer.dll

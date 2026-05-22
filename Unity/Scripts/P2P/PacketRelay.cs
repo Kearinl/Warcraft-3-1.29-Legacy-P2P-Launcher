@@ -1,50 +1,69 @@
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
-using System;
 
 public class PacketRelay : MonoBehaviour
 {
-    [Header("Remote Peer")]
-    public string remoteIP = "127.0.0.1";
-    public int remotePort = 6200;
+    [Header("Relay Server")]
+    public string serverIP = "127.0.0.1";
+    public int serverPort = 5048;
+
+    [Header("Player")]
+    public string playerId;
 
     private UdpClient udp;
-    private IPEndPoint remoteEndPoint;
+    private IPEndPoint relayEndPoint;
 
     void Start()
     {
         udp = new UdpClient(0);
 
-        remoteEndPoint =
-            new IPEndPoint(
-                IPAddress.Parse(remoteIP),
-                remotePort
-            );
+        relayEndPoint = new IPEndPoint(Resolve(serverIP), serverPort);
 
-        Debug.Log("PacketRelay ready");
+        if (string.IsNullOrEmpty(playerId))
+            playerId = Guid.NewGuid().ToString();
+
+        Debug.Log("Relay ready: " + relayEndPoint);
     }
 
-    // SEND WC3 PACKET TO PEER
+    // ? FIXED SIGNATURE (MATCHES YOUR SNiffer CALL)
     public void Send(byte[] data, string senderId)
     {
         if (udp == null) return;
 
-        string payload =
-            Convert.ToBase64String(data);
+        try
+        {
+            string payload = Convert.ToBase64String(data);
 
-        string json =
-            $"{senderId}|{payload}";
+            // format: senderId|base64
+            string msg = $"{senderId}|{payload}";
 
-        byte[] bytes =
-            Encoding.UTF8.GetBytes(json);
+            byte[] bytes = Encoding.UTF8.GetBytes(msg);
 
-        udp.Send(
-            bytes,
-            bytes.Length,
-            remoteEndPoint
-        );
+            udp.Send(bytes, bytes.Length, relayEndPoint);
+
+            Debug.Log("SENDING TO RELAY: " + relayEndPoint);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("Relay send failed: " + ex.Message);
+        }
+    }
+
+    private IPAddress Resolve(string host)
+    {
+        if (IPAddress.TryParse(host, out var ip))
+            return ip;
+
+        var list = Dns.GetHostAddresses(host);
+
+        foreach (var a in list)
+            if (a.AddressFamily == AddressFamily.InterNetwork)
+                return a;
+
+        return list[0];
     }
 
     void OnDestroy()
